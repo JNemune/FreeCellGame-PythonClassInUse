@@ -1,4 +1,8 @@
+import os
 import cards
+deck=cards.Deck()
+deck.shuffle()
+
 
 def setup():
     """
@@ -8,9 +12,12 @@ def setup():
     - cell (list of 4 empty lists)
     - a tableau (a list of 8 lists, the dealt cards)
     """
-    foundation = None # temporary value that needs to be replaced
-    cell = None # temporary value that needs to be replaced  
-    tableau = None # temporary value that needs to be replaced
+    foundation = [[], [], [], []]
+    cell = [[], [], [], []]
+    tableau = [[],[],[],[], [], [], [], []]
+
+    for i in range(4): tableau[i]=[deck.deal() for i in range(7)]
+    for i in range(4, 8): tableau[i]=[deck.deal() for i in range(6)]
 
     return foundation,tableau,cell
 
@@ -22,7 +29,18 @@ def move_to_foundation(tableau,foundation,t_col,f_col):
     moves a card at the end of a column of tableau to a column of foundation
     This function can also be used to move a card from cell to foundation
     '''
-    pass
+    if foundation[f_col]:
+        origin, destination = str(tableau[t_col][-1]), str(foundation[f_col][-1])
+        if origin[0]=='A': origin='1'+origin[1]
+        if destination[0]=='A': destination='1'+destination[1]
+        if origin[1]==destination[1] and int(origin[0])-1==int(destination[0]):
+            foundation[f_col].append(tableau[t_col].pop())
+        else: return "Read The Rules (Enter 'h')."
+    else:
+        if str(tableau[t_col][-1])[0]=='A':
+            foundation[f_col].append(tableau[t_col].pop())
+        else: return "Read The Rules (Enter 'h')."
+    return f'move {foundation[f_col][-1]}'
 
 
 def move_to_cell(tableau,cell,t_col,c_col):
@@ -94,7 +112,7 @@ def print_game(foundation, tableau,cell):
     for stack in foundation:
         # print if there is a card there; if not, exception prints spaces.
         try:
-            print('{:8s}'.format(stack[-1]), end = '')
+            print(str(stack[-1]).rjust(8), end = '')
         except IndexError:
             print('{:8s}'.format(''), end = '')
 
@@ -115,7 +133,7 @@ def print_game(foundation, tableau,cell):
         for stack in tableau:
             # print if there is a card there; if not, exception prints spaces.
             try:
-                print('{:8s}'.format(stack[i]), end = '')
+                print(str(stack[i]).ljust(8), end = '')
             except IndexError:
                 print('{:8s}'.format(''), end = '')
         print()  # carriage return at the end of the line
@@ -172,14 +190,18 @@ def play():
         # Uncomment this next line. It is commented out because setup doesn't do anything so printing doesn't work.
         print_game(foundation, tableau, cell)
         response = input("Command (type 'h' for help): ")
+        os.system('cls')
         response = response.strip()
         response_list = response.split()
         if len(response_list) > 0:
             r = response_list[0]
             if r == 't2f':
-                pass # you implement                          
+                try:
+                    t_col, f_col = int(response_list[1])-1, int(response_list[2])-1
+                    print(move_to_foundation(tableau, foundation, t_col, f_col))
+                except ValueError and Exception: print('Unknown Commad:', response)
             elif r == 't2t':
-                pass # you implement                          
+                pass
             elif r == 't2c':
                 pass # you implement                          
             elif r == 'c2t':

@@ -1,22 +1,22 @@
 import random    # required for shuffle method of Deck
 
 class Card(object):
-    ''' Suit and rank are ints, and index into suit_list and rank_list.
+    ''' Suit and rank are integers, and index into suit_list and rank_list.
         Value is different from rank: for example face cards are equal in value (all 10)
     '''
-    # Use these lists to map the ints of suit and rank to nice words.
+    # Use these lists to map the integers of suit and rank to nice words.
     # The 'x' is a place holder so that index-2 maps to '2', etc.
     suit_list = ['x','c','d','h','s']
     rank_list = ['x', 'A', '2', '3', '4', '5', '6', '7', '8', '9', '10','J', 'Q', 'K']
 
     def __init__(self, rank=0, suit=0):
-        ''' Rank and suit must be ints. This checks that they are in the correct range.
+        ''' Rank and suit must be integers. This checks that they are in the correct range.
             Blank card has rank and suit set to 0.
         '''
         self.__suit = 0
         self.__rank = 0
         if type(suit) == int and type(rank) == int:
-            # only good indicies work
+            # only good indices work
             if suit in range(1,5) and rank in range(1,15):
                 self.__suit = suit
                 self.__rank = rank
@@ -26,16 +26,6 @@ class Card(object):
 
     def get_suit(self):
         return self.__suit
-    
-##    These two "set" methods are for testing: turn them on for testing and
-##    and then turn off.  These allow you to change a card's rand and suit so
-##    you can test situations that might occur infrequently.
-##
-##    def set_rank(self, rank):
-##        self.__rank = rank
-##
-##    def set_suit(self, suit):
-##        self.__suit = suit
 
     def get_value(self):
         ''' Face cards return 10, the rest return their rank values. Aces are low.
@@ -91,22 +81,18 @@ class Deck(object):
         '''Returns True if the deck is empty.'''
         return len(self.__deck) == 0
 
-    def __str__(self):
-        ''' Print a deck, simple but messy!
+    def __str__(self, column_max=10):
+        ''' Column-oriented printing of a deck.
         '''
-        return ','.join([str(card) for card in self.__deck])
-            
-    def __repr__(self):
+        out=list()
+        for index,card in enumerate(self.__deck):
+            if index%column_max == 0:  # at final column so print a carriage return
+                out.append('\n')
+            out.append(str(card).rjust(4), end='')
+        out.append('\n\n')
+        return ''.join(out)
+
+def __repr__(self):
         ''' Messy print deck, if you enter a deck's name in the shell.
         '''
         return self.__str__()
-
-    def pretty_print(self, column_max=10):
-        ''' Column-oriented printing of a deck.
-        '''
-        for index,card in enumerate(self.__deck):
-            if index%column_max == 0:  # at final column so print a carriage return
-                print()
-            print("{:4s}".format(card), end='')
-        print()
-        print()

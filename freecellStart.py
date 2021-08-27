@@ -12,12 +12,14 @@ def setup():
     - cell (list of 4 empty lists)
     - a tableau (a list of 8 lists, the dealt cards)
     """
-    foundation = [[], [], [], []]
-    cell = [[], [], [], []]
-    tableau = [[],[],[],[], [], [], [], []]
+    foundation = [list() for i in range(4)]
+    cell = [list() for i in range(4)]
+    tableau = [list() for i in range(8)]
 
     for i in range(4): tableau[i]=[deck.deal() for i in range(7)]
     for i in range(4, 8): tableau[i]=[deck.deal() for i in range(6)]
+    tableau[2][-1]=cards.Card(2, 2)
+    tableau[6][-1]=cards.Card(3, 4)
 
     return foundation,tableau,cell
 
@@ -76,8 +78,19 @@ def move_in_tableau(tableau,t_col_source,t_col_dest):
     move card from one tableau column to another
     remember to check validity of move
     '''
-    pass
-        
+    if tableau[t_col_dest]:
+        origin, destination = str(tableau[t_col_source][-1]), str(tableau[t_col_dest][-1])
+        if origin[0]=='A': origin='1'+origin[1]
+        if destination[0]=='A': destination='1'+destination[1]
+        if ((origin[1] in ['d', 'h'] and destination[1] in ['s', 'c']) or\
+            (origin[1] in ['s', 'c'] and destination[1] in ['d', 'h']))\
+            and int(origin[0])+1==int(destination[0]):
+            tableau[t_col_dest].append(tableau[t_col_source].pop())
+        else:
+            return "Read The Rules (Enter 'h')."
+    else:
+        tableau[t_col_dest].append(tableau[t_col_source].pop())
+    return f'move {tableau[t_col_dest][-1]}'
 
 def print_game(foundation, tableau,cell):
     """
@@ -199,9 +212,12 @@ def play():
                 try:
                     t_col, f_col = int(response_list[1])-1, int(response_list[2])-1
                     print(move_to_foundation(tableau, foundation, t_col, f_col))
-                except ValueError and Exception: print('Unknown Commad:', response)
+                except (ValueError, IndexError): print('Unknown Command:', response)
             elif r == 't2t':
-                pass
+                try:
+                    t1, t2 = int(response_list[1])-1, int(response_list[2])-1
+                    print(move_in_tableau(tableau, t1, t2))
+                except (ValueError, IndexError): print('Unknown Commad:', response)
             elif r == 't2c':
                 pass # you implement                          
             elif r == 'c2t':

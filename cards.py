@@ -6,7 +6,7 @@ class Card(object):
     '''
     # Use these lists to map the integers of suit and rank to nice words.
     # The 'x' is a place holder so that index-2 maps to '2', etc.
-    suit_list = ['x','c','d','h','s']
+    suit_list = ['x','d', 'c','h','s']
     rank_list = ['x', 'A', '2', '3', '4', '5', '6', '7', '8', '9', '10','J', 'Q', 'K']
 
     def __init__(self, rank=0, suit=0):
@@ -28,10 +28,9 @@ class Card(object):
         return self.__suit
 
     def get_value(self):
-        ''' Face cards return 10, the rest return their rank values. Aces are low.
+        ''' Return suit and rank of the self as a tuple.
         '''
-        # ternary expression:
-        return self.__rank if self.__rank < 10 else 10
+        return (self.__rank, self.__suit)
 
     def equal_suit(self, other):
         '''Returns True if suits are equal.'''
@@ -41,9 +40,13 @@ class Card(object):
         '''Returns True if ranks are equal.'''
         return self.__rank == other.__rank
 
-    def equal_value(self, other):
-        '''Returns True if values are equal.'''
-        return self.get_value() == other.get_value()
+    def rank_diff(self, other):
+        '''Returns True if self's rank is 1 more than orther's rank.'''
+        return self.__rank==other.__rank+1
+    
+    def alt_suit(self, other):
+        '''Return True if self and other have alternative suit color.'''
+        return self.__suit%2!=other.__suit%2
 
     def __str__(self):
         ''' Called by print() so you can print a card, just like any other data structure.

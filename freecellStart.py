@@ -30,14 +30,12 @@ def move_to_foundation(tableau,foundation,t_col,f_col):
     This function can also be used to move a card from cell to foundation
     '''
     if foundation[f_col]:
-        origin, destination = str(tableau[t_col][-1]), str(foundation[f_col][-1])
-        if origin[0]=='A': origin='1'+origin[1]
-        if destination[0]=='A': destination='1'+destination[1]
-        if origin[1]==destination[1] and int(origin[0])-1==int(destination[0]):
+        origin, destination = tableau[t_col][-1], foundation[f_col][-1]
+        if origin.equal_suit(destination) and origin.rank_diff(destination):
             foundation[f_col].append(tableau[t_col].pop())
         else: return "Read The Rules (Enter 'h')."
     else:
-        if str(tableau[t_col][-1])[0]=='A':
+        if tableau[t_col][-1].get_rank()==1:
             foundation[f_col].append(tableau[t_col].pop())
         else: return "Read The Rules (Enter 'h')."
     return f'move {foundation[f_col][-1]}'
@@ -61,12 +59,8 @@ def move_to_tableau(cell, tableau, c_col, t_col):
     remember to check validity of move
     '''
     if tableau[t_col]:
-        origin, destination = str(cell[c_col][0]), str(tableau[t_col][-1])
-        if origin[0]=='A': origin='1'+origin[1]
-        if destination[0]=='A': destination='1'+destination[1]
-        if ((origin[1] in ['d', 'h'] and destination[1] in ['s', 'c']) or\
-            (origin[1] in ['s', 'c'] and destination[1] in ['d', 'h']))\
-            and int(origin[0])+1==int(destination[0]):
+        origin, destination = cell[c_col][0], tableau[t_col][-1]
+        if origin.alt_suit(destination) and destination.rank_diff(origin):
             tableau[t_col].append(cell[c_col].pop())
         else:
             return "Read The Rules (Enter 'h')."
@@ -92,12 +86,8 @@ def move_in_tableau(tableau,t_col_source,t_col_dest):
     remember to check validity of move
     '''
     if tableau[t_col_dest]:
-        origin, destination = str(tableau[t_col_source][-1]), str(tableau[t_col_dest][-1])
-        if origin[0]=='A': origin='1'+origin[1]
-        if destination[0]=='A': destination='1'+destination[1]
-        if ((origin[1] in ['d', 'h'] and destination[1] in ['s', 'c']) or\
-            (origin[1] in ['s', 'c'] and destination[1] in ['d', 'h']))\
-            and int(origin[0])+1==int(destination[0]):
+        origin, destination = tableau[t_col_source][-1], tableau[t_col_dest][-1]
+        if origin.alt_suit(destination) and destination.rank_diff(origin):
             tableau[t_col_dest].append(tableau[t_col_source].pop())
         else:
             return "Read The Rules (Enter 'h')."
@@ -186,7 +176,7 @@ def print_rules():
 
     print("Cell")
     print("\tCan only contain 1 card")
-    print("\tThe card may be moved")
+    print("\tThe card may be moved\n\n")
 
 def show_help():
     '''
@@ -217,6 +207,7 @@ def play():
         print_game(foundation, tableau, cell)
         response = input("Command (type 'h' for help): ")
         os.system('cls')
+        print_rules()
         response = response.strip()
         response_list = response.split()
         if len(response_list) > 0:

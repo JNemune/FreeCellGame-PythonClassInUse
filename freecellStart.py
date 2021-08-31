@@ -53,22 +53,35 @@ def move_to_cell(tableau,cell,t_col,c_col):
     cell[c_col].append(tableau[t_col].pop())
     return f'move {cell[c_col][-1]}'
 
-def move_to_tableau(tableau,foundation,t_col,f_col):
+def move_to_tableau(cell, tableau, c_col, t_col):
     '''
     parameters: a tableau, a cell, column of tableau, a cell
     returns: Boolean (True if the move is valid, False otherwise)
     moves a card in the cell to a column of tableau
     remember to check validity of move
     '''
-    pass
+    if tableau[t_col]:
+        origin, destination = str(cell[c_col][0]), str(tableau[t_col][-1])
+        if origin[0]=='A': origin='1'+origin[1]
+        if destination[0]=='A': destination='1'+destination[1]
+        if ((origin[1] in ['d', 'h'] and destination[1] in ['s', 'c']) or\
+            (origin[1] in ['s', 'c'] and destination[1] in ['d', 'h']))\
+            and int(origin[0])+1==int(destination[0]):
+            tableau[t_col].append(cell[c_col].pop())
+        else:
+            return "Read The Rules (Enter 'h')."
+    else:
+        tableau[t_col].append(cell[c_col].pop())
+    return f'move {tableau[t_col][-1]}'
         
 
-def is_winner(foundation):
+def is_winner(tableau, cell):
     '''
     parameters: a foundation
     return: Boolean
     '''
-    pass
+    if not (any(tableau) or any(cell)): return True
+    return False
 
 
 def move_in_tableau(tableau,t_col_source,t_col_dest):
@@ -224,7 +237,10 @@ def play():
                     print(move_to_cell(tableau, cell, t_col, c_col))
                 except (ValueError, IndexError): print('Unknown Commad:', response)
             elif r == 'c2t':
-                pass # you implement                          
+                try:
+                    c_col, t_col = int(response_list[1])-1, int(response_list[2])-1
+                    print(move_to_tableau(cell, tableau, c_col, t_col))
+                except (ValueError, IndexError): print('Unknown Commad:', response)
             elif r == 'c2f':
                 try:
                     c_col, f_col = int(response_list[1])-1, int(response_list[2])-1
@@ -238,6 +254,7 @@ def play():
                 print('Unknown command:',r)
         else:
             print("Unknown Command:",response)
+        if is_winner(tableau, cell): print('Congratulations! You WIN.'); break
     print('Thanks for playing')
 
 play()

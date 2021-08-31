@@ -18,8 +18,6 @@ def setup():
 
     for i in range(4): tableau[i]=[deck.deal() for i in range(7)]
     for i in range(4, 8): tableau[i]=[deck.deal() for i in range(6)]
-    tableau[2][-1]=cards.Card(2, 2)
-    tableau[6][-1]=cards.Card(3, 4)
 
     return foundation,tableau,cell
 
@@ -51,7 +49,9 @@ def move_to_cell(tableau,cell,t_col,c_col):
     returns: Boolean (True if the move is valid, False otherwise)
     moves a card at the end of a column of tableau to a cell
     '''
-    pass
+    if cell[c_col]: return f'Cell number {c_col+1} is not empty. Read the rules (enter \'h\').'
+    cell[c_col].append(tableau[t_col].pop())
+    return f'move {cell[c_col][-1]}'
 
 def move_to_tableau(tableau,foundation,t_col,f_col):
     '''
@@ -117,9 +117,9 @@ def print_game(foundation, tableau,cell):
     for c in cell:
         # print if there is a card there; if not, exception prints spaces.
         try:
-            print('{:8s}'.format(c[0]), end = '')
+            print(str(c[0]).rjust(8), end = '')
         except IndexError:
-            print('{:8s}'.format(''), end = '')
+            print(' '*8, end = '')
             
     print('    ', end = '')
     for stack in foundation:
@@ -219,11 +219,17 @@ def play():
                     print(move_in_tableau(tableau, t1, t2))
                 except (ValueError, IndexError): print('Unknown Commad:', response)
             elif r == 't2c':
-                pass # you implement                          
+                try:
+                    t_col, c_col = int(response_list[1])-1, int(response_list[2])-1
+                    print(move_to_cell(tableau, cell, t_col, c_col))
+                except (ValueError, IndexError): print('Unknown Commad:', response)
             elif r == 'c2t':
                 pass # you implement                          
             elif r == 'c2f':
-                pass # you implement                          
+                try:
+                    c_col, f_col = int(response_list[1])-1, int(response_list[2])-1
+                    print(move_to_foundation(cell, foundation, c_col, f_col))
+                except (ValueError, IndexError): print('Unknown Commad:', response)
             elif r == 'q':
                 break
             elif r == 'h':
@@ -235,8 +241,3 @@ def play():
     print('Thanks for playing')
 
 play()
-
-
-        
-    
-
